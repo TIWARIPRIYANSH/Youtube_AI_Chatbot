@@ -1,0 +1,30 @@
+# Core
+langchain
+langchain-core
+
+# FastAPI
+fastapi
+uvicorn[standard]
+
+# Google Gemini
+langchain-google-genai
+google-generativeai
+
+# HuggingFace Embeddings
+langchain-huggingface
+transformers
+huggingface-hub
+
+# Vector DB
+chromadb
+
+# YouTube Loader
+langchain-community
+youtube-transcript-api
+
+# Env
+python-dotenv
+
+# ML Utils
+numpy>=1.26,<2.0
+scikit-learn

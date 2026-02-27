@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YouTube AI Chatbot</title>
+  <!-- Inter font from Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <div class="header">
+      <img src="icons/icon128.png" alt="Logo" class="header-icon" />
+      <div class="header-info">
+        <div class="header-title">YouTube AI Chat</div>
+        <div class="header-subtitle">Ask anything about this video</div>
+      </div>
+      <div class="status-dot" title="Connected"></div>
+    </div>
+
+    <!-- Video URL Bar -->
+    <div class="url-bar">
+      <label for="videoUrl">Video:</label>
+      <input
+        type="text"
+        id="videoUrl"
+        class="url-input"
+        placeholder="Detecting YouTube URL..."
+        spellcheck="false"
+      />
+    </div>
+
+    <!-- Chat Messages Container -->
+    <div class="chat-container" id="chatContainer">
+      <!-- Welcome state shown initially -->
+      <div class="welcome" id="welcomeState">
+        <div class="welcome-icon">🎬</div>
+        <div class="welcome-title">Ready to chat</div>
+        <div class="welcome-text">
+          Open a YouTube video and ask me anything about it.
+          I'll use AI to analyze the content and answer your questions.
+        </div>
+      </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="input-area">
+      <input
+        type="text"
+        id="chatInput"
+        class="chat-input"
+        placeholder="Ask about this video..."
+        autocomplete="off"
+      />
+      <button id="sendBtn" class="send-btn" title="Send message">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

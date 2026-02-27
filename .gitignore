@@ -1,0 +1,28 @@
+# =========================
+# Python
+# =========================
+backend/venv/
+backend/__pycache__/
+backend/*.pyc
+backend/.env
+
+# =========================
+# Chroma DB (if persistent)
+# =========================
+backend/chroma_db/
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# VS Code
+# =========================
+.vscode/
+
+# =========================
+# Node (if added later)
+# =========================
+node_modules/
