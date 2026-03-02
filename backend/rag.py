@@ -1,8 +1,10 @@
+import os
+from urllib.parse import urlparse, parse_qs
 from langchain_community.document_loaders import YoutubeLoader
 from langchain_core.output_parsers import StrOutputParser
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_core.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.runnables import (
@@ -14,6 +16,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+def extract_video_id(url: str):
+    parsed_url = urlparse(url)
+    query_params = parse_qs(parsed_url.query)
+    return query_params.get("v", [None])[0]
+
 # ---------------------------
 # MAIN FUNCTION
 # ---------------------------
@@ -21,7 +28,25 @@ video_cache = {}
 def get_answer(video_url: str, query: str):
 
     # 1️⃣ Load Transcript
-    if video_url not in video_cache:
+    video_id = extract_video_id(video_url)
+
+    if not video_id:
+        return "Invalid YouTube URL."
+
+    persist_directory = f"./vector_store/{video_id}"
+
+    embeddings = HuggingFaceEmbeddings(
+            model_name="sentence-transformers/all-MiniLM-L6-v2"
+        )
+
+    if os.path.exists(persist_directory):
+        print("Loading existing vector DB from disk...")
+        vector_store = Chroma(
+            persist_directory=persist_directory,
+            embedding_function=embeddings
+        )
+
+    else:
         # Load transcript
         loader = YoutubeLoader.from_youtube_url(video_url, language="en")
         docs = loader.load()
@@ -32,19 +57,19 @@ def get_answer(video_url: str, query: str):
         )
         splitted_docs = splitter.split_documents(docs)
 
-        embeddings = HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2"
-        )
-
         vector_store = Chroma.from_documents(
             documents=splitted_docs,
             embedding=embeddings,
+            persist_directory=persist_directory
         )
+        vector_store.persist()
+        #
+    
+    # Reuse stored vector DB(Ram way)
+    #retriever = video_cache[video_url].as_retriever(search_kwargs={"k": 3})
+     
+    retriever=vector_store.as_retriever(search_kwargs={"k": 3}) 
 
-        video_cache[video_url] = vector_store
-
-    # Reuse stored vector DB
-    retriever = video_cache[video_url].as_retriever(search_kwargs={"k": 3})
 
     # 3️⃣ Helper
     def join_docs(docs):
@@ -71,6 +96,8 @@ IMPORTANT RULES:
 - Be precise and faithful to the transcript.
 - Do not overwrite or invent details.
 - If asked for a summary, summarize strictly based on the transcript.
+- If ask questions about specific details, answer based on the transcript and do not assume anything beyond it.
+- If ask questions like most discussed topic, important points, or similar, analyze the transcript and answer based on it without adding any outside knowledge.
 - If asked whether a topic is discussed, clearly state whether it appears in the transcript and explain briefly using transcript evidence.
 
 Transcript Context:
